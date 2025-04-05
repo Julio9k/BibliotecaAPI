@@ -1,4 +1,5 @@
-﻿using BibliotecaAPI.Datos;
+﻿using System.Collections.Concurrent;
+using BibliotecaAPI.Datos;
 using BibliotecaAPI.Entidades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ namespace BibliotecaAPI.Controllers
 
     [ApiController]
     [Route("")]
-    public class AutoresController: ControllerBase
+    public class AutoresController : ControllerBase
     {
         private readonly AplicationDbContext context;
 
@@ -22,16 +23,23 @@ namespace BibliotecaAPI.Controllers
         {
             return await context.Autores.ToListAsync();
         }
-       /* public IEnumerable<Autor> Get()
 
+
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Autor>> Get(int id)
         {
-            return new List<Autor>
-            {
-                new Autor{Id=1, Nombre="Felipe"},
-                new Autor{Id=2, Nombre="Claudia"}
-            };
+            var autor = await context.Autores.FirstOrDefaultAsync(x => x.Id == id);
 
-        }*/
+            if (autor is null)
+            {
+                return NotFound();
+
+            }
+
+            return autor;
+
+        }
 
         [HttpPost]
         public async Task<ActionResult> Post(Autor autor)
@@ -40,6 +48,35 @@ namespace BibliotecaAPI.Controllers
             await context.SaveChangesAsync();
             return Ok();
         }
-        
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put( int id, Autor autor)
+            {
+            if (id!= autor.Id)
+            {
+                return BadRequest("Los id deben de considir");
+            }
+
+            context.Update(autor);
+            await context.SaveChangesAsync();
+            return Ok();
+            }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var registroBorrados = await context.Autores.Where(x => x.Id == id).ExecuteDeleteAsync();
+
+            if (registroBorrados==0)
+            {
+                return NotFound();            
+            }
+
+            return Ok();
+
+        }
+
+
+
     }
 }
