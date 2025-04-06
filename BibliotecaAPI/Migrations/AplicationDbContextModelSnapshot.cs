@@ -37,6 +37,44 @@ namespace BibliotecaAPI.Migrations
 
                     b.ToTable("Autores");
                 });
+
+            modelBuilder.Entity("BibliotecaAPI.Entidades.Libro", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AutorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AutorId");
+
+                    b.ToTable("Libros");
+                });
+
+            modelBuilder.Entity("BibliotecaAPI.Entidades.Libro", b =>
+                {
+                    b.HasOne("BibliotecaAPI.Entidades.Autor", "Autor")
+                        .WithMany("Libros")
+                        .HasForeignKey("AutorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Autor");
+                });
+
+            modelBuilder.Entity("BibliotecaAPI.Entidades.Autor", b =>
+                {
+                    b.Navigation("Libros");
+                });
 #pragma warning restore 612, 618
         }
     }
