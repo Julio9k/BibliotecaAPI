@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BibliotecaAPI.Controllers
-{
+{ 
 
     [ApiController]
     [Route("")]
