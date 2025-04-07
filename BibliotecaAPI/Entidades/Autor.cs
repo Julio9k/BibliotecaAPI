@@ -3,7 +3,7 @@ using BibliotecaAPI.Validaciones;
 
 namespace BibliotecaAPI.Entidades
 {
-    public class Autor
+    public class Autor:IValidatableObject
     {
         public int Id { get; set; }
 
@@ -13,12 +13,19 @@ namespace BibliotecaAPI.Entidades
         public required string Nombre{ get; set; }
         public List<Libro> Libros { get; set; } = new List<Libro>();
 
-        [Range(18,120)]
-        public int Edad { get; set; }
-        [CreditCard]
-        public string? TaejetaDeCredito { get; set; }
-        [Url]
-        public String? URL { get; set; }
+     
 
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if(!string.IsNullOrEmpty(Nombre))
+            {
+                var primeraLetra = Nombre[0].ToString();
+                if (primeraLetra != primeraLetra.ToUpper())
+                {
+                    yield return new ValidationResult("La primera letra deve ser mayúscula - por modelo",
+                        new string[] { nameof(Nombre) });
+                }
+            }
+        }
     }
 }
