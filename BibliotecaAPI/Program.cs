@@ -16,6 +16,13 @@ var app = builder.Build();
 
 // Add middlewares to the container
 
+app.Use(async (contexto, next) =>
+{
+    var logger = contexto.RequestServices.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation($"Petición: {contexto.Request.Method} {contexto.Request.Path}");
+    await next.Invoke();
+    logger.LogInformation($"Respuesta: {contexto.Response.StatusCode}");
+});
 app.MapControllers();
 
 app.Run();
