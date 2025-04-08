@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using BibliotecaAPI.Datos;
+using BibliotecaAPI.DTOs;
 using BibliotecaAPI.Entidades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,24 +13,30 @@ namespace BibliotecaAPI.Controllers
     public class AutoresController : ControllerBase
     {
         private readonly AplicationDbContext context;
+        
 
         public AutoresController(AplicationDbContext context)
         {
             this.context = context;
+           
         }
         [HttpGet]
-
-        public async Task<IEnumerable<Autor>> Get()
+        public async Task<IEnumerable<AutorDTO>> Get()
         {
+       
             
-            return await context.Autores
-                                        .Include(a => a.Libros)
-                                         .ToListAsync();
+            var autores= await context.Autores.ToListAsync();
+            var autoresDTO = autores.Select(autor =>
+                                                  new AutorDTO 
+                                                  { Id = autor.Id, 
+                                                    NombreCompleto = $"{autor.Nombres} {autor.Apellidos}"
+                                                  });
+            return autoresDTO;
         }
 
 
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}",Name ="ObtenerAutor")]
         public async Task<ActionResult<Autor>> Get(int id)
         {
             var autor = await context.Autores
@@ -51,7 +58,7 @@ namespace BibliotecaAPI.Controllers
         {
             context.Add(autor);
             await context.SaveChangesAsync();
-            return Ok();
+            return CreatedAtRoute("ObtenerAutor",new {id=autor.Id},autor);
         }
 
         [HttpPut("{id:int}")]
