@@ -5,9 +5,8 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllers().AddJsonOptions(opciones=>
-opciones.JsonSerializerOptions.ReferenceHandler=ReferenceHandler.IgnoreCycles);
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddDbContext<AplicationDbContext>(opciones => 
                                     opciones.UseSqlServer("name=DefaultConnection"));
